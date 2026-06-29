@@ -44,3 +44,6 @@ app.get('/calc', (req, res) => {
 
   res.json({ result: ops[op](a, b) });
 });
+
+// No final do services/index.js
+module.exports = app;
