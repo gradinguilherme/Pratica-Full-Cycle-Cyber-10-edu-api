@@ -21,3 +21,10 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`EduLearn User Service (vulnerável) rodando na porta ${PORT}`);
 });
+
+app.get('/calc', (req, res) => {
+  const expr = req.query.expr || '2+2';
+  // Insecure eval
+  const result = eval(expr);
+  res.json({ result });
+});
