@@ -22,10 +22,25 @@ app.listen(PORT, () => {
   console.log(`EduLearn User Service (vulnerável) rodando na porta ${PORT}`);
 });
 
-// Exemplo: cálculo simples via função segura
 app.get('/calc', (req, res) => {
-  const expr = req.query.expr || '2+2';
-  // Não use eval; suporte apenas números e +,-,*,/
-  const safe = expr.match(/^[0-9+\-*/ ().]+$/) ? Function(`return ${expr}`)() : null;
-  res.json({ result: safe });
+  const a = parseFloat(req.query.a);
+  const b = parseFloat(req.query.b);
+  const op = req.query.op;
+
+  if (isNaN(a) || isNaN(b) || !op) {
+    return res.status(400).json({ error: 'Parâmetros inválidos. Use: ?a=2&b=3&op=+' });
+  }
+
+  const ops = {
+    '+': (x, y) => x + y,
+    '-': (x, y) => x - y,
+    '*': (x, y) => x * y,
+    '/': (x, y) => y !== 0 ? x / y : null,
+  };
+
+  if (!ops[op]) {
+    return res.status(400).json({ error: 'Operador inválido. Use: +, -, *, /' });
+  }
+
+  res.json({ result: ops[op](a, b) });
 });
