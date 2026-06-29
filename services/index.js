@@ -21,3 +21,29 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`EduLearn User Service (vulnerável) rodando na porta ${PORT}`);
 });
+
+app.get('/calc', (req, res) => {
+  const a = parseFloat(req.query.a);
+  const b = parseFloat(req.query.b);
+  const op = req.query.op;
+
+  if (isNaN(a) || isNaN(b) || !op) {
+    return res.status(400).json({ error: 'Parâmetros inválidos. Use: ?a=2&b=3&op=+' });
+  }
+
+  const ops = {
+    '+': (x, y) => x + y,
+    '-': (x, y) => x - y,
+    '*': (x, y) => x * y,
+    '/': (x, y) => y !== 0 ? x / y : null,
+  };
+
+  if (!ops[op]) {
+    return res.status(400).json({ error: 'Operador inválido. Use: +, -, *, /' });
+  }
+
+  res.json({ result: ops[op](a, b) });
+});
+
+// No final do services/index.js
+module.exports = app;
