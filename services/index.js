@@ -24,7 +24,22 @@ app.listen(PORT, () => {
 
 app.get('/calc', (req, res) => {
   const expr = req.query.expr || '2+2';
-  // Não use eval; suporte apenas números e +,-,*,/
-  const safe = expr.match(/^[0-9+\-*/ ().]+$/) ? new Function(`return ${expr}`)() : null;
-  res.json({ result: safe });
+
+  // Parser seguro sem eval ou Function()
+  const match = expr.match(/^\s*(-?\d+(?:\.\d+)?)\s*([+\-*\/])\s*(-?\d+(?:\.\d+)?)\s*$/);
+  if (!match) {
+    return res.status(400).json({ error: 'Expressão inválida' });
+  }
+
+  const a = parseFloat(match[1]);
+  const op = match[2];
+  const b = parseFloat(match[3]);
+
+  let result;
+  if (op === '+') result = a + b;
+  else if (op === '-') result = a - b;
+  else if (op === '*') result = a * b;
+  else if (op === '/') result = b !== 0 ? a / b : null;
+
+  res.json({ result });
 });
